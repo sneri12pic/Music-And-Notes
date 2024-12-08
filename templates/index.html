@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="../static/styles.css">
+    <title>Music & Note Taking</title>
+</head>
+
+<body>
+<div class="container">
+    <!-- Music Tab (Left Column) -->
+    <div class="music-tab">
+        <h2>Music Tab</h2>
+        <!-- File Upload Form -->
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="audio/*" required>
+            <button type="submit">Upload Music</button>
+        </form>
+        <!-- Uploaded Music List -->
+        <div class="uploaded-music">
+            <h3>Uploaded Music</h3>
+            {% if music_files %}
+            <ul id="music-list">
+                {% for file in music_files %}
+                <li data-file="{{ file }}">
+                    <p>{{ file }}</p>
+                    <button class="delete-btn" onclick="deleteMusic('{{ file }}')">Delete</button>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No music uploaded yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Single Audio Player -->
+        <audio id="audio-player" controls>
+            <source id="audio-source" src="" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button id="prev-btn">Previous</button>
+            <button id="pause-btn">Pause</button>
+            <button id="next-btn">Next</button>
+
+            <!-- Volume Control -->
+            <label for="volume-slider">Volume:</label>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+        </div>
+    </div>
+
+    <!-- Resizer Between Columns -->
+    <div class="resizer"></div>
+
+    <!-- Writing Page (Middle Column) -->
+    <div class="containerWriting">
+        <div class="writing-page">
+            <textarea placeholder="Write here..."></textarea>
+        </div>
+    </div>
+
+    <!-- Resizer Between Columns -->
+    <div class="resizer"></div>
+
+    <!-- PDF Viewer (Right Column) -->
+    <div class="pdf-viewer">
+        <input type="file" id="pdfInput" accept="application/pdf">
+        <iframe id="pdfPreview"></iframe>
+    </div>
+</div>
+
+<!-- Script loaded at the bottom of the body to ensure HTML elements are loaded first -->
+<script src="../static/script.js"></script>
+</body>
+</html>
