@@ -17,27 +17,12 @@
     <div class="music-container flex-shrink-0">
         <div class="music-tab">
             <h2>Music Tab</h2>
-            <!-- File Upload Form -->
+
+            <!-- Music File Upload Form -->
             <form action="/upload" method="post" enctype="multipart/form-data">
                 <input type="file" name="file" accept="audio/*" required>
                 <button type="submit">Upload Music</button>
             </form>
-            <!-- Uploaded Music List -->
-            <div class="uploaded-music">
-                <h3>Uploaded Music</h3>
-                {% if music_files %}
-                <ul id="music-list">
-                    {% for file in music_files %}
-                    <li data-file="{{ file }}">
-                        <p>{{ file }}</p>
-                        <button class="delete-btn" onclick="deleteMusic('{{ file }}')">Delete</button>
-                    </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p>No music uploaded yet.</p>
-                {% endif %}
-            </div>
 
             <!-- Single Audio Player -->
             <audio id="audio-player" controls>
@@ -47,13 +32,30 @@
 
             <!-- Audio Controls -->
             <div class="audio-controls">
-                <button id="prev-btn">Previous</button>
+                <button id="prev-btn"><</button>
                 <button id="pause-btn">Pause</button>
-                <button id="next-btn">Next</button>
+                <button id="next-btn">></button>
 
                 <!-- Volume Control -->
                 <label for="volume-slider">Volume:</label>
                 <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+
+            <!-- Uploaded Music List -->
+            <div class="uploaded-music">
+                <h3>Uploaded Music</h3>
+                {% if audio_files %}
+                <ul id="music-list">
+                    {% for file in audio_files %}
+                    <li class="music-item" data-file="{{ file }}">
+                        <p>{{ file }}</p>
+                        <button class="delete-btn" onclick="deleteMusic('{{ file }}')">Delete</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No music uploaded yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -74,13 +76,25 @@
     <!-- PDF Viewer (Right Column) -->
     <div class="pdf-container flex-shrink-0">
         <div class="pdf-viewer">
+            <h3>Upload PDF</h3>
+            <!-- PDF File Upload Form -->
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="application/pdf" required>
+                <button type="submit">Upload PDF</button>
+            </form>
+
+            <!-- PDF Preview (Iframe) -->
+            <h4>Preview PDF</h4>
             <input type="file" id="pdfInput" accept="application/pdf">
-            <iframe id="pdfPreview"></iframe>
+            <iframe id="pdfPreview" width="100%" height="600px"></iframe>
         </div>
     </div>
 </div>
 
 <!-- Script loaded at the bottom of the body to ensure HTML elements are loaded first -->
 <script src="../static/script.js"></script>
+<!-- Link to the drag-and-drop script file -->
+<script src="../static/drag-drop.js"></script>
+
 </body>
 </html>

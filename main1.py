@@ -1,33 +1,47 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask import send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 # Configuration for file uploads
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'mp3', 'wav', 'ogg', 'flac'}  # Define allowed file extensions
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.secret_key = 'supersecretkey'  # Required for flash messages
+UPLOAD_FOLDER_AUDIO = 'uploads'  # For MP3 and other audio files
+UPLOAD_FOLDER_PDF = 'uploads-pdf'  # For PDF files
+ALLOWED_EXTENSIONS_AUDIO = {'mp3', 'wav', 'ogg', 'flac'}  # Allowed audio extensions
+ALLOWED_EXTENSIONS_PDF = {'pdf'}  # Allowed PDF extension
+app.config['UPLOAD_FOLDER_AUDIO'] = UPLOAD_FOLDER_AUDIO
+app.config['UPLOAD_FOLDER_PDF'] = UPLOAD_FOLDER_PDF
 
-# Ensure the upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.secret_key = 'supersecretkey'
 
-def allowed_file(filename):
-    """Check if the file has an allowed extension."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# Ensure the upload folders exist
+os.makedirs(UPLOAD_FOLDER_AUDIO, exist_ok=True)
+os.makedirs(UPLOAD_FOLDER_PDF, exist_ok=True)
+
+def allowed_file_audio(filename):
+    """Check if the file is an allowed audio type."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_AUDIO
+
+def allowed_file_pdf(filename):
+    """Check if the file is a PDF."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_PDF
 
 @app.route('/uploads/<filename>')
-def serve_file(filename):
-    """Serve uploaded files."""
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+def serve_audio(filename):
+    """Serve uploaded audio files."""
+    return send_from_directory(app.config['UPLOAD_FOLDER_AUDIO'], filename)
+
+@app.route('/uploads-pdf/<filename>')
+def serve_pdf(filename):
+    """Serve uploaded PDF files."""
+    return send_from_directory(app.config['UPLOAD_FOLDER_PDF'], filename)
 
 @app.route('/')
 def home():
     """Render the main page."""
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    music_files = [f for f in files if allowed_file(f)]
-    return render_template('index.html', music_files=music_files)
+    audio_files = os.listdir(app.config['UPLOAD_FOLDER_AUDIO'])
+    pdf_files = os.listdir(app.config['UPLOAD_FOLDER_PDF'])
+    return render_template('index.html', audio_files=audio_files, pdf_files=pdf_files)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -41,27 +55,33 @@ def upload_file():
         flash('No selected file')
         return redirect(url_for('home'))
 
-    if file and allowed_file(file.filename):
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    if allowed_file_audio(file.filename):  # For audio files
+        filepath = os.path.join(app.config['UPLOAD_FOLDER_AUDIO'], file.filename)
         file.save(filepath)
-        flash('File uploaded successfully')
-        return redirect(url_for('home'))
+        flash('Audio file uploaded successfully')
+    elif allowed_file_pdf(file.filename):  # For PDF files
+        filepath = os.path.join(app.config['UPLOAD_FOLDER_PDF'], file.filename)
+        file.save(filepath)
+        flash('PDF file uploaded successfully')
     else:
         flash('Invalid file type')
         return redirect(url_for('home'))
+
+    return redirect(url_for('home'))
 
 @app.route('/delete/<filename>', methods=['POST'])
 def delete_file(filename):
     """Handle file deletion."""
     try:
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if filename.endswith('.pdf'):
+            filepath = os.path.join(app.config['UPLOAD_FOLDER_PDF'], filename)
+        else:
+            filepath = os.path.join(app.config['UPLOAD_FOLDER_AUDIO'], filename)
 
-        # Check if the file exists before attempting to delete it
         if not os.path.exists(filepath):
             flash(f'File {filename} not found.')
             return redirect(url_for('home'))
 
-        # Attempt to delete the file
         os.remove(filepath)
         flash(f'{filename} deleted successfully.')
 

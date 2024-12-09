@@ -14,10 +14,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const writingPage = document.querySelector('.writing-page');
     const pdfViewer = document.querySelector('.pdf-viewer');
 
-    // Initial variables to store the positions
     let isResizingLeft = false;
     let isResizingRight = false;
     let startX, startWidthLeft, startWidthRight;
+
+
+    // Load the first track but do not autoplay
+    if (musicFiles.length > 0) {
+        const firstFile = musicFiles[0].getAttribute("data-file");
+        audioSource.src = "/uploads/" + firstFile;
+    }
+
+    // Function to play a track
+    function playTrack(file) {
+        // Pause and reset the audio player before changing the source
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+
+        // Set the new file source
+        audioSource.src = "/uploads/" + file;
+
+        // Load the new audio file
+        audioPlayer.load();
+
+        // Once the audio is loaded, play it
+        audioPlayer.play().catch(error => {
+            console.error('Error playing the audio:', error);
+        });
+    }
 
     // Function to play the next track
     function playNextTrack() {
@@ -27,9 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const nextFile = musicFiles[currentTrackIndex].getAttribute("data-file");
-        audioSource.src = "/uploads/" + nextFile; // Corrected URL
-        audioPlayer.load();
-        audioPlayer.play();
+        playTrack(nextFile);
     }
 
     // Function to play the previous track
@@ -40,9 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const prevFile = musicFiles[currentTrackIndex].getAttribute("data-file");
-        audioSource.src = "/uploads/" + prevFile; // Corrected URL
-        audioPlayer.load();
-        audioPlayer.play();
+        playTrack(prevFile);
     }
 
     // Function to toggle pause and play
@@ -56,14 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Set the first track as the initial track
-    if (musicFiles.length > 0) {
-        const firstFile = musicFiles[0].getAttribute("data-file");
-        audioSource.src = "/uploads/" + firstFile; // Corrected URL
-        audioPlayer.load();
-        audioPlayer.play();
-    }
-
     // Add event listener to go to the next track when the current one ends
     audioPlayer.addEventListener('ended', playNextTrack);
 
@@ -72,9 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fileElement.addEventListener('click', () => {
             currentTrackIndex = index;
             const selectedFile = fileElement.getAttribute("data-file");
-            audioSource.src = "/uploads/" + selectedFile; // Corrected URL
-            audioPlayer.load();
-            audioPlayer.play();
+            playTrack(selectedFile);
         });
     });
 
@@ -83,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("next-btn").addEventListener("click", playNextTrack);
     document.getElementById("pause-btn").addEventListener("click", togglePlayPause);
 
-    // Get the volume slider
+    // Get the volume slider and set its initial value
     const volumeSlider = document.getElementById('volume-slider');
     volumeSlider.value = audioPlayer.volume;
 
@@ -92,6 +102,35 @@ document.addEventListener('DOMContentLoaded', function () {
         audioPlayer.volume = volumeSlider.value;
     });
 
+    // PDF update
+    document.getElementById('pdfInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            // Upload the file to the server
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Once the PDF is uploaded, update the iframe with the file URL
+                        const iframe = document.getElementById('pdfPreview');
+                        const fileUrl = `/uploads-pdf/${file.name}`;
+                        iframe.src = fileUrl;
+                    } else {
+                        alert('Error uploading file');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        } else {
+            alert('Please upload a valid PDF file.');
+        }
+    });
+
+    // Resizers
     // Function to handle resizing of the left tab (Music Tab)
     function startResizeLeft(e) {
         isResizingLeft = true;
