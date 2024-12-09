@@ -12,67 +12,71 @@
 </head>
 
 <body>
-<div class="container">
+<div class="container-fluid d-flex" style="height: 100vh;">
     <!-- Music Tab (Left Column) -->
-    <div class="music-tab">
-        <h2>Music Tab</h2>
-        <!-- File Upload Form -->
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept="audio/*" required>
-            <button type="submit">Upload Music</button>
-        </form>
-        <!-- Uploaded Music List -->
-        <div class="uploaded-music">
-            <h3>Uploaded Music</h3>
-            {% if music_files %}
-            <ul id="music-list">
-                {% for file in music_files %}
-                <li data-file="{{ file }}">
-                    <p>{{ file }}</p>
-                    <button class="delete-btn" onclick="deleteMusic('{{ file }}')">Delete</button>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>No music uploaded yet.</p>
-            {% endif %}
-        </div>
+    <div class="music-container flex-shrink-0">
+        <div class="music-tab">
+            <h2>Music Tab</h2>
+            <!-- File Upload Form -->
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="audio/*" required>
+                <button type="submit">Upload Music</button>
+            </form>
+            <!-- Uploaded Music List -->
+            <div class="uploaded-music">
+                <h3>Uploaded Music</h3>
+                {% if music_files %}
+                <ul id="music-list">
+                    {% for file in music_files %}
+                    <li data-file="{{ file }}">
+                        <p>{{ file }}</p>
+                        <button class="delete-btn" onclick="deleteMusic('{{ file }}')">Delete</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No music uploaded yet.</p>
+                {% endif %}
+            </div>
 
-        <!-- Single Audio Player -->
-        <audio id="audio-player" controls>
-            <source id="audio-source" src="" type="audio/mp3">
-            Your browser does not support the audio element.
-        </audio>
+            <!-- Single Audio Player -->
+            <audio id="audio-player" controls>
+                <source id="audio-source" src="" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
 
-        <!-- Audio Controls -->
-        <div class="audio-controls">
-            <button id="prev-btn">Previous</button>
-            <button id="pause-btn">Pause</button>
-            <button id="next-btn">Next</button>
+            <!-- Audio Controls -->
+            <div class="audio-controls">
+                <button id="prev-btn">Previous</button>
+                <button id="pause-btn">Pause</button>
+                <button id="next-btn">Next</button>
 
-            <!-- Volume Control -->
-            <label for="volume-slider">Volume:</label>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+                <!-- Volume Control -->
+                <label for="volume-slider">Volume:</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
         </div>
     </div>
 
-    <!-- Resizer Between Columns -->
-    <div class="resizer"></div>
+    <!-- Resizer between Music Tab and Writing Page -->
+    <div class="resizer" id="resizer-left"></div>
 
     <!-- Writing Page (Middle Column) -->
-    <div class="containerWriting">
+    <div class="writing-container flex-grow-1">
         <div class="writing-page">
             <textarea placeholder="Write here..."></textarea>
         </div>
     </div>
 
-    <!-- Resizer Between Columns -->
-    <div class="resizer"></div>
+    <!-- Resizer between Writing Page and PDF Viewer -->
+    <div class="resizer" id="resizer-right"></div>
 
     <!-- PDF Viewer (Right Column) -->
-    <div class="pdf-viewer">
-        <input type="file" id="pdfInput" accept="application/pdf">
-        <iframe id="pdfPreview"></iframe>
+    <div class="pdf-container flex-shrink-0">
+        <div class="pdf-viewer">
+            <input type="file" id="pdfInput" accept="application/pdf">
+            <iframe id="pdfPreview"></iframe>
+        </div>
     </div>
 </div>
 

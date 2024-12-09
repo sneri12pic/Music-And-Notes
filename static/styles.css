@@ -11,11 +11,12 @@ body {
 }
 
 /* General Container Styling */
-.container {
+.container-fluid {
     display: flex;
     gap: 20px;
     width: 90%;
     height: 90%;  /* This is now 90% of the viewport height */
+    overflow: hidden; /* Prevent content from spilling out */
 }
 
 /* Left Column: Music Tab */
@@ -211,4 +212,13 @@ textarea {
 /* Audio Element Styling */
 audio {
     margin-bottom: 10px;
+}
+
+/* Resizer styling */
+.resizer {
+    background-color: #513131;
+    cursor: ew-resize;
+    width: 10px;
+    height: 70%;
+    margin: 0 5px;  /* Slight margin for spacing */
 }
