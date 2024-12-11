@@ -1,3 +1,25 @@
+# Music & Note Taking Web Application
+
+This web application allows users to upload and play music, take notes with basic text formatting features (bold/italic), and view PDF files. It provides an interactive interface with three main sections:
+
+1. **Music Tab**: Upload and play audio files.
+2. **Writing Page**: A rich-text editor where users can write notes with bold and italic formatting options.
+3. **PDF Viewer**: View PDF files uploaded by the user.
+
+## Features
+- **Music Player**: Allows users to upload and play audio files, with options to pause, play, skip, and adjust the volume.
+- **Note Taking**: Users can write notes with formatting options (bold, italic).
+- **PDF Viewer**: Users can upload and preview PDF files.
+- **Dynamic Layout Resizing**: The layout is resizable, allowing users to adjust the width of the music and PDF sections to their preference.
+
+## Files Included
+1. **index.html**: The main HTML structure for the application.
+2. **styles.css**: The CSS file for styling the layout and elements of the page.
+3. **script.js**: The JavaScript file responsible for handling functionality such as music control, note formatting, PDF display, and dynamic resizing.
+4. **static/styles.css**: Additional custom styles for finer control over the layout and design.
+
+## Project Structure
+
 
 ## How to Run the Application
 
