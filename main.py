@@ -6,42 +6,28 @@ app = Flask(__name__)
 
 # Configuration for file uploads
 UPLOAD_FOLDER_AUDIO = 'uploads'  # For MP3 and other audio files
-UPLOAD_FOLDER_PDF = 'uploads-pdf'  # For PDF files
 ALLOWED_EXTENSIONS_AUDIO = {'mp3', 'wav', 'ogg', 'flac'}  # Allowed audio extensions
-ALLOWED_EXTENSIONS_PDF = {'pdf'}  # Allowed PDF extension
 app.config['UPLOAD_FOLDER_AUDIO'] = UPLOAD_FOLDER_AUDIO
-app.config['UPLOAD_FOLDER_PDF'] = UPLOAD_FOLDER_PDF
 
 app.secret_key = 'supersecretkey'
 
 # Ensure the upload folders exist
 os.makedirs(UPLOAD_FOLDER_AUDIO, exist_ok=True)
-os.makedirs(UPLOAD_FOLDER_PDF, exist_ok=True)
 
 def allowed_file_audio(filename):
     """Check if the file is an allowed audio type."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_AUDIO
-
-def allowed_file_pdf(filename):
-    """Check if the file is a PDF."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_PDF
 
 @app.route('/uploads/<filename>')
 def serve_audio(filename):
     """Serve uploaded audio files."""
     return send_from_directory(app.config['UPLOAD_FOLDER_AUDIO'], filename)
 
-@app.route('/uploads-pdf/<filename>')
-def serve_pdf(filename):
-    """Serve uploaded PDF files."""
-    return send_from_directory(app.config['UPLOAD_FOLDER_PDF'], filename)
-
 @app.route('/')
 def home():
     """Render the main page."""
     audio_files = os.listdir(app.config['UPLOAD_FOLDER_AUDIO'])
-    pdf_files = os.listdir(app.config['UPLOAD_FOLDER_PDF'])
-    return render_template('index.html', audio_files=audio_files, pdf_files=pdf_files)
+    return render_template('index.html', audio_files=audio_files)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -59,10 +45,6 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER_AUDIO'], file.filename)
         file.save(filepath)
         flash('Audio file uploaded successfully')
-    elif allowed_file_pdf(file.filename):  # For PDF files
-        filepath = os.path.join(app.config['UPLOAD_FOLDER_PDF'], file.filename)
-        file.save(filepath)
-        flash('PDF file uploaded successfully')
     else:
         flash('Invalid file type')
         return redirect(url_for('home'))

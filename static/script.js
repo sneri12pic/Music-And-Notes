@@ -102,29 +102,48 @@ document.addEventListener('DOMContentLoaded', function () {
         audioPlayer.volume = volumeSlider.value;
     });
 
-    // PDF update
+    //Writing Page update:BUTTONS FOR BOLD/ITALIC JS
+    document.getElementById('bold-btn').addEventListener('click', function () {
+        applyFormatting('bold');
+    });
+
+    document.getElementById('italic-btn').addEventListener('click', function () {
+        applyFormatting('italic');
+    });
+
+    function applyFormatting(command) {
+        const textarea = document.getElementById('text-area');
+        textarea.focus();
+        document.execCommand(command);
+    }
+    //Infinite Writing Page
+    function autoResizeContent() {
+        const writingPage = document.getElementById('writing-page');
+
+        // Reset height to 'auto' to shrink it when content is removed
+        writingPage.style.height = 'auto';
+
+        // Set the height to match the content's scrollHeight
+        writingPage.style.height = writingPage.scrollHeight + 'px';
+    }
+
+
+
+// PDF update: Display the selected PDF file immediately without server interaction
     document.getElementById('pdfInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
-        if (file && file.type === 'application/pdf') {
-            // Upload the file to the server
-            const formData = new FormData();
-            formData.append('file', file);
 
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Once the PDF is uploaded, update the iframe with the file URL
-                        const iframe = document.getElementById('pdfPreview');
-                        const fileUrl = `/uploads-pdf/${file.name}`;
-                        iframe.src = fileUrl;
-                    } else {
-                        alert('Error uploading file');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+        if (file && file.type === 'application/pdf') {
+            const reader = new FileReader();
+
+            // On file load, display the PDF in the iframe
+            reader.onload = function(e) {
+                const iframe = document.getElementById('pdfPreview');
+                iframe.src = e.target.result; // Set the iframe source to the PDF data URL
+            };
+
+            // Read the file as a data URL
+            reader.readAsDataURL(file);
         } else {
             alert('Please upload a valid PDF file.');
         }
@@ -154,9 +173,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isResizingLeft) {
             const dx = e.clientX - startX;
             const newWidth = startWidthLeft + dx;
-            if (newWidth > 100 && newWidth < window.innerWidth - 200) { // Prevent too small or too large widths
+
+            // Prevent too small or too large widths
+            if (newWidth > 100 && newWidth < window.innerWidth - 200) {
                 musicTab.style.width = newWidth + 'px';
-                writingPage.style.marginLeft = newWidth + 'px';
+
+                // Dynamically calculate the width for the writing page
+                const remainingWidth = window.innerWidth - newWidth - pdfContainer.offsetWidth;
+                writingPage.style.width = remainingWidth + 'px';
             }
         }
     }
