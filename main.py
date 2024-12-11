@@ -55,15 +55,15 @@ def upload_file():
 def delete_file(filename):
     """Handle file deletion."""
     try:
-        if filename.endswith('.pdf'):
-            filepath = os.path.join(app.config['UPLOAD_FOLDER_PDF'], filename)
-        else:
-            filepath = os.path.join(app.config['UPLOAD_FOLDER_AUDIO'], filename)
+        # Construct the correct path to the file
+        filepath = os.path.join(app.config['UPLOAD_FOLDER_AUDIO'], filename)
 
+        # Check if the file exists
         if not os.path.exists(filepath):
             flash(f'File {filename} not found.')
             return redirect(url_for('home'))
 
+        # Attempt to delete the file
         os.remove(filepath)
         flash(f'{filename} deleted successfully.')
 
@@ -73,6 +73,7 @@ def delete_file(filename):
         flash(f'An unexpected error occurred: {str(e)}')
 
     return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -102,6 +102,32 @@ document.addEventListener('DOMContentLoaded', function () {
         audioPlayer.volume = volumeSlider.value;
     });
 
+    // Function to handle file deletion
+    window.deleteMusic = function(fileName) {
+        const fileElement = document.querySelector(`[data-file="${fileName}"]`);
+
+        // Remove the list item from the DOM
+        if (fileElement) {
+            fileElement.remove();
+        }
+
+        // Send a POST request to delete the file on the server
+        fetch(`/delete/${fileName}`, {
+            method: 'POST',  // POST request for deletion
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('File deleted successfully from the server');
+                } else {
+                    console.error('Failed to delete the file from the server');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting file from the server:', error);
+            });
+    };
+
+
     //Writing Page update:BUTTONS FOR BOLD/ITALIC JS
     document.getElementById('bold-btn').addEventListener('click', function () {
         applyFormatting('bold');
