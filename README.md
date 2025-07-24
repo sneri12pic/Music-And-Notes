@@ -5,6 +5,7 @@ This web application allows users to upload and play music, take notes with basi
 1. **Music Tab**: Upload and play audio files.
 2. **Writing Page**: A rich-text editor where users can write notes with bold and italic formatting options.
 3. **PDF Viewer**: View PDF files uploaded by the user.
+<img width="1897" height="829" alt="image" src="https://github.com/user-attachments/assets/949ed417-de1d-4834-8d66-e7a10f319bf9" />
 
 ## Features
 - **Music Player**: Allows users to upload and play audio files, with options to pause, play, skip, and adjust the volume.
